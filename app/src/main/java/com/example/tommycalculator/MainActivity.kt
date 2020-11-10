@@ -8,4 +8,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }
+
+    fun appendOnExpresentation(string: String, canClear : Boolean){
+        if(canClear){
+            tvResult.text=""
+        }
+    }
 }
