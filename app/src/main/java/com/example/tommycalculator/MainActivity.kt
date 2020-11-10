@@ -8,58 +8,96 @@ import net.objecthunter.exp4j.ExpressionBuilder
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), Calculator {
+    lateinit var txtInput: TextView
+    lateinit var txthasil: TextView
+    var lastNumeric: Boolean = false
+    var stateError: Boolean = false
+    var lastDot: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        txtInput = findViewById(R.id.tvExpression)
+        txthasil = findViewById(R.id.tvResult)
 
     }
-    var text_result = findViewById<TextView>(R.id.text_result)
+//    var text_result = findViewById<TextView>(R.id.text_result)
+//    var tvExpression = findViewById<TextView>(R.id.tvExpression)
     override fun onDigit(view: View) {
-        if (text_result.text.toString().trim() == "0") text_result.text = ""
-        text_result.append((view as TextView).text.toString())
+    if (stateError) {
+        // If current state is Error, replace the error message
+        txtInput.text = (view as TextView).text
+        stateError = false
+    } else {
+        // If not, already there is a valid expression so append to it
+        txtInput.append((view as TextView).text)
     }
+    // Set the flag
+    lastNumeric = true
+}
+
+
 
     override fun onOperator(view: View) {
-        text_result.append("${(view as TextView).text}")
+        if (lastNumeric && !stateError) {
+            txtInput.append((view as TextView).text)
+            lastNumeric = false
+            lastDot = false    // Reset the DOT flag
+        }
     }
 
     override fun onClear(view: View) {
-        text_result.text = "0"
+        this.txtInput.text = ""
+        this.txthasil.text = ""
+        lastNumeric = false
+        stateError = false
+        lastDot = false
     }
 
     override fun onEqual(view: View) {
-        try {
-            val expression = ExpressionBuilder(text_result.text.toString()).build()
-            val result = expression.evaluate()
-            text_result.text = (if (result % 1 > 0) result else
-                result.toInt()).toString()
-        }catch (e: Exception){
-            e.printStackTrace()
+        // If the current state is error, nothing to do.
+        // If the last input is a number only, solution can be found.
+        if (lastNumeric && !stateError) {
+            // Read the expression
+            val txt = txtInput.text.toString()
+            // Create an Expression (A class from exp4j library)
+            val expression = ExpressionBuilder(txt).build()
+            try {
+                // Calculate the result and display
+                val result = expression.evaluate()
+                txthasil.text = result.toString()
+                lastDot = true // Result contains a dot
+            } catch (ex: ArithmeticException) {
+                // Display an error message
+                txtInput.text = "Error"
+                stateError = true
+                lastNumeric = false
+            }
         }
     }
 
     override fun onBracketStrat(view: View) {
-        text_result.append("(")
+        txtInput.append("(")
     }
 
     override fun onvBracketEnd(view: View) {
-        text_result.append(")")
+        txtInput.append(")")
     }
 
     override fun onDecimal(view: View) {
-        text_result.append(".")
+        txtInput.append(".")
     }
 
     override fun onDelete(view: View) {
-        val resultAfterDel :String = text_result.text.toString()
+        val resultAfterDel :String = txtInput.text.toString()
         if (resultAfterDel.isNotEmpty()){
-            text_result.text = resultAfterDel.dropLast(n = 1 )
+            txtInput.text = resultAfterDel.dropLast(n = 1 )
         }else{
-            text_result.text="0"
+            txtInput.text="0"
         }
     }
+
+
 
 
 }
