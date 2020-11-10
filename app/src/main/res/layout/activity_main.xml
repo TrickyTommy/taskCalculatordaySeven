@@ -85,7 +85,7 @@
             <TextView
                 android:id="@+id/tvMul"
                 style="@style/ActionButtonStyle"
-                android:text="*"
+                android:text="X"
                 android:onClick="onOperator"
                 />
         </LinearLayout>
@@ -172,11 +172,11 @@
                 android:text="0"
                 android:onClick="onDigit"
                 />
-            <TextView
+            <ImageView
                 android:id="@+id/tvBack"
                 style="@style/NumberButtonStyle"
                 android:scaleType="center"
-                android:text="Back"
+                android:src="@mipmap/ic_back"
                 android:onClick="onDelete"
                 />
             <TextView
