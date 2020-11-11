@@ -85,7 +85,7 @@
             <TextView
                 android:id="@+id/tvMul"
                 style="@style/ActionButtonStyle"
-                android:text="X"
+                android:text="*"
                 android:onClick="onOperator"
                 />
         </LinearLayout>

@@ -2,8 +2,10 @@ package com.example.tommycalculator
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import net.objecthunter.exp4j.ExpressionBuilder
 import java.lang.Exception
 
@@ -57,22 +59,36 @@ class CalculatorActivity : AppCompatActivity(), Calculator {
     override fun onEqual(view: View) {
         // If the current state is error, nothing to do.
         // If the last input is a number only, solution can be found.
-        if (lastNumeric && !stateError) {
-            // Read the expression
-            val txt = txtInput.text.toString()
-            // Create an Expression (A class from exp4j library)
-            val expression = ExpressionBuilder(txt).build()
-            try {
-                // Calculate the result and display
-                val result = expression.evaluate()
+//        if (lastNumeric && !stateError) {
+//            // Read the expression
+//            val txt = txtInput.text.toString()
+//            // Create an Expression (A class from exp4j library)
+//            val expression = ExpressionBuilder(txt).build()
+//            try {
+//                // Calculate the result and display
+//                val result = expression.evaluate()
+//                txthasil.text = result.toString()
+//                lastDot = true // Result contains a dot
+//            } catch (ex: ArithmeticException) {
+//                // Display an error message
+//                txtInput.text = "Error"
+//                stateError = true
+//                lastNumeric = false
+//            }
+//        }
+        try {
+            val expression = ExpressionBuilder(txtInput.text.toString()).build()
+            val result = expression.evaluate()
+            val longResult = result.toLong()
+            if (result == longResult.toDouble()) {
+
+                txthasil.text = longResult.toString()
+            } else
                 txthasil.text = result.toString()
-                lastDot = true // Result contains a dot
-            } catch (ex: ArithmeticException) {
-                // Display an error message
-                txtInput.text = "Error"
-                stateError = true
-                lastNumeric = false
-            }
+
+        } catch (e: Exception) {
+            Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+            Log.d("EXCEPTION", "Message: ${e.message}")
         }
     }
 
@@ -85,7 +101,11 @@ class CalculatorActivity : AppCompatActivity(), Calculator {
     }
 
     override fun onDecimal(view: View) {
-        txtInput.append(".")
+        if (lastNumeric && !stateError) {
+            txtInput.append((view as TextView).text)
+            lastNumeric = false
+            lastDot = false    // Reset the DOT flag
+        }
     }
 
     override fun onDelete(view: View) {
